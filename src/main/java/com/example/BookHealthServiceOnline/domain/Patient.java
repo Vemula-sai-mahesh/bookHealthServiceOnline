@@ -14,7 +14,7 @@ public class Patient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long patientId;
+    private Long id;
 
     @Column(name = "first_name", nullable = false)
     @NotBlank
@@ -52,16 +52,18 @@ public class Patient {
     private String emergencyContact;
 
     // Getters and setters
-    public Long getPatientId() {
-        return patientId;
-    }
 
-    public void setPatientId(Long patientId) {
-        this.patientId = patientId;
-    }
 
     public String getFirstName() {
         return firstName;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setFirstName(String firstName) {
@@ -123,6 +125,8 @@ public class Patient {
     public void setEmergencyContact(String emergencyContact) {
         this.emergencyContact = emergencyContact;
     }
+
+
 
     // Enum for gender
     public enum Gender {

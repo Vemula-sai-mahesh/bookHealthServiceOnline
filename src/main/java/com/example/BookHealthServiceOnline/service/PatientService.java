@@ -9,8 +9,8 @@ import java.util.UUID;
 public interface PatientService {
 
     void savePatient(Patient patient);
-    Patient findById(Long patientId);
+    Patient findById(Long id);
     List<Patient> findAll();
     void updatePatient(Patient patient);
-    void deletePatient(Long patientId);
+    void deletePatient(Long id);
 }

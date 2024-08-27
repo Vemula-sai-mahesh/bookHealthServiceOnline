@@ -38,7 +38,7 @@ public class DatabaseInitializer implements CommandLineRunner {
             // Execute schema creation first
 
             try {
-                tableCreationSql = String.format(tableCreationSql, tenantId, tenantId);
+                tableCreationSql = String.format(tableCreationSql, tenantId,tenantId, tenantId);
                 jdbcTemplate.execute(schemaCreationSql);
                 // Execute table creation
                 jdbcTemplate.execute(tableCreationSql);

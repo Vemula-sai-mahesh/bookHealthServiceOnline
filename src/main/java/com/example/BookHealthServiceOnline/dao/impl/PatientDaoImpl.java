@@ -1,6 +1,7 @@
 package com.example.BookHealthServiceOnline.dao.impl;
 
 import com.example.BookHealthServiceOnline.dao.PatientDao;
+
 import com.example.BookHealthServiceOnline.domain.Patient;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -55,19 +56,19 @@ public class PatientDaoImpl implements PatientDao {
         params.addValue("address", patient.getAddress());
         params.addValue("emergencyContact", patient.getEmergencyContact());
 
-        if (patient.getPatientId() == null) {
+        if (patient.getId() == null) {
             // Insert new record and retrieve generated ID
-            int rowsAffected = jdbcTemplate.update(INSERT_PATIENT, params, keyHolder, new String[]{"patient_id"});
+            int rowsAffected = jdbcTemplate.update(INSERT_PATIENT, params, keyHolder, new String[]{"id"});
             if (rowsAffected > 0) {
                 Number key = keyHolder.getKey();
                 if (key != null) {
-                    patient.setPatientId(key.longValue());
+                    patient.setId(key.longValue());
                     return patient;
                 }
             }
         } else {
             // Update existing record
-            params.addValue("patientId", patient.getPatientId());
+            params.addValue("patientId", patient.getId());
             jdbcTemplate.update(UPDATE_PATIENT, params);
             return patient;
         }
@@ -99,7 +100,7 @@ public class PatientDaoImpl implements PatientDao {
         @Override
         public Patient mapRow(ResultSet rs, int rowNum) throws SQLException {
             Patient patient = new Patient();
-            patient.setPatientId(rs.getLong("patient_id"));
+            patient.setId(rs.getLong("patient_id"));
             patient.setFirstName(rs.getString("first_name"));
             patient.setLastName(rs.getString("last_name"));
             patient.setDateOfBirth(rs.getDate("date_of_birth").toLocalDate());
