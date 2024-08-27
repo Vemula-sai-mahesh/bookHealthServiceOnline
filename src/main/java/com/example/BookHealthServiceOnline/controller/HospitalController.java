@@ -27,7 +27,7 @@ public class HospitalController {
         return new ResponseEntity<>(savedHospital, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/getById/{id}")
     public ResponseEntity<Hospital> getHospitalById(@PathVariable Long id) {
         Hospital hospital = hospitalService.findById(id);
         if (hospital != null) {
@@ -37,7 +37,7 @@ public class HospitalController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<Hospital>> getAllHospitals() {
         List<Hospital> hospitals = hospitalService.findAll();
         return new ResponseEntity<>(hospitals, HttpStatus.OK);

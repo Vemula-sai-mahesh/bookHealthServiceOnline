@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface HospitalDao {
     Hospital save(Hospital hospital);
+    Hospital update(Hospital updatedHospital);
     Hospital findById(Long id);
     List<Hospital> findAll();
     void deleteById(Long id);

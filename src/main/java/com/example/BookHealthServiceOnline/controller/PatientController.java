@@ -39,26 +39,27 @@ public class PatientController {
         patient.setEmergencyContact(patientDTO.getEmergencyContact());
 
         // Save the Patient entity to the database
-        patientService.savePatient(patient);
+        patientService.save(patient);
 
         // Return a response indicating success
         return new ResponseEntity<>("Patient created successfully", HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Patient> getPatientById(@PathVariable Long id) {
+    public ResponseEntity<Patient> getPatientById(  @RequestHeader("X-PrivateTenant") String tenant,@PathVariable Long id) {
         Patient patient = patientService.findById(id);
         return (patient != null) ? ResponseEntity.ok(patient) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @GetMapping
-    public ResponseEntity<List<Patient>> getAllPatients() {
+    public ResponseEntity<List<Patient>> getAllPatients( @RequestHeader("X-PrivateTenant") String tenant) {
         List<Patient> patients = patientService.findAll();
         return ResponseEntity.ok(patients);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updatePatient(
+            @RequestHeader("X-PrivateTenant") String tenant,
             @PathVariable Long id,
             @Valid @RequestBody PatientDTO patientDTO) {
 
@@ -75,20 +76,20 @@ public class PatientController {
         patient.setEmergencyContact(patientDTO.getEmergencyContact());
 
         // Save the updated patient
-        patientService.updatePatient(patient);
+        patientService.update(patient);
 
         return new ResponseEntity<>("Patient updated successfully", HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePatient(@PathVariable Long id) {
+    public ResponseEntity<String> deletePatient(  @RequestHeader("X-PrivateTenant") String tenant,@PathVariable Long id) {
         Patient patient = patientService.findById(id);
 
         if (patient==null) {
             return new ResponseEntity<>("Patient not found", HttpStatus.NOT_FOUND);
         }
 
-        patientService.deletePatient(id);
+        patientService.delete(id);
         return new ResponseEntity<>("Patient deleted successfully", HttpStatus.NO_CONTENT);
     }
 }

@@ -1,13 +1,26 @@
 package com.example.BookHealthServiceOnline.domain;
 
+import com.example.BookHealthServiceOnline.AbstractAuditingEntity;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
+
 @Entity
-public class Hospital {
+public class Hospital extends AbstractAuditingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String domainUrl;
+
+    public String getDomainUrl() {
+        return domainUrl;
+    }
+
+    public void setDomainUrl(String domainUrl) {
+        this.domainUrl = domainUrl;
+    }
 
     public Long getId() {
         return id;

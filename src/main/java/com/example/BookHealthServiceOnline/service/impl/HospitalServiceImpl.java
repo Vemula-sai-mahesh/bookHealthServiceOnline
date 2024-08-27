@@ -25,12 +25,24 @@ public class HospitalServiceImpl implements HospitalService {
     @Override
     public Hospital save(Hospital hospital) {
 
-        String result=tenantService.createTenantSchemaAndTables(hospital);
-        if(result.equals("error")){
-            return null;
+        if(hospital.getId()==null){
+            String result=tenantService.createTenantSchemaAndTables(hospital);
+            if(result.equals("error")){
+                return null;
+            }
+            hospital=hospitalDao.save(hospital);
+            return hospital;
         }
-        hospital=hospitalDao.save(hospital);
-        return hospital;
+       return null;
+    }
+
+    @Override
+    public Hospital update(Hospital hospital) {
+        if(hospital.getId()!=null){
+            hospital=hospitalDao.update(hospital);
+            return hospital;
+        }
+        return null;
     }
 
     @Override

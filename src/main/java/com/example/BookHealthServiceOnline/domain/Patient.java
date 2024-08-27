@@ -1,5 +1,6 @@
 package com.example.BookHealthServiceOnline.domain;
 
+import com.example.BookHealthServiceOnline.AbstractAuditingEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -10,24 +11,42 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "patients")
-public class Patient {
+public class Patient extends AbstractAuditingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long patientId;
+    private Long id;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Column(unique = true)
+    @NotNull
+    private Long userId;
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     @Column(name = "first_name", nullable = false)
-    @NotBlank
     @Size(max = 50)
     private String firstName;
 
     @Column(name = "last_name", nullable = false)
-    @NotBlank
     @Size(max = 50)
     private String lastName;
 
     @Column(name = "date_of_birth", nullable = false)
-    @NotNull
     private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
@@ -51,14 +70,6 @@ public class Patient {
     @Size(max = 20)
     private String emergencyContact;
 
-    // Getters and setters
-    public Long getPatientId() {
-        return patientId;
-    }
-
-    public void setPatientId(Long patientId) {
-        this.patientId = patientId;
-    }
 
     public String getFirstName() {
         return firstName;
@@ -123,6 +134,7 @@ public class Patient {
     public void setEmergencyContact(String emergencyContact) {
         this.emergencyContact = emergencyContact;
     }
+
 
     // Enum for gender
     public enum Gender {
