@@ -1,6 +1,7 @@
 package com.example.BookHealthServiceOnline.service;
 
 import com.example.BookHealthServiceOnline.domain.HospitalService;
+
 import java.util.List;
 
 public interface HospitalServiceService {

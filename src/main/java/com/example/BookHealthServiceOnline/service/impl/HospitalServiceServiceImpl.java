@@ -16,7 +16,6 @@ public class HospitalServiceServiceImpl implements HospitalServiceService {
 
     @Override
     public HospitalService save(HospitalService hospitalService) {
-        // Perform any validation if needed before saving
         return hospitalServiceDao.save(hospitalService);
     }
 

@@ -57,6 +57,30 @@ public class PatientController {
         return ResponseEntity.ok(patients);
     }
 
+//    @PutMapping("/{id}")
+//    public ResponseEntity<String> updatePatient(
+//            @RequestHeader("X-PrivateTenant") String tenant,
+//            @PathVariable Long id,
+//            @Valid @RequestBody PatientDTO patientDTO) {
+//
+//        // Fetch existing patient
+//        Patient patient = patientService.findById(id);
+//
+//        patient.setFirstName(patientDTO.getFirstName());
+//        patient.setLastName(patientDTO.getLastName());
+//        patient.setDateOfBirth(patientDTO.getDateOfBirth());
+//        patient.setGender(Patient.Gender.valueOf(patientDTO.getGender())); // Convert String to Gender enum
+//        patient.setContactNumber(patientDTO.getContactNumber());
+//        patient.setEmail(patientDTO.getEmail());
+//        patient.setAddress(patientDTO.getAddress());
+//        patient.setEmergencyContact(patientDTO.getEmergencyContact());
+//
+//        // Save the updated patient
+//        patientService.update(patient);
+//
+//        return new ResponseEntity<>("Patient updated successfully", HttpStatus.OK);
+//    }
+
     @PutMapping("/{id}")
     public ResponseEntity<String> updatePatient(
             @RequestHeader("X-PrivateTenant") String tenant,
@@ -66,6 +90,12 @@ public class PatientController {
         // Fetch existing patient
         Patient patient = patientService.findById(id);
 
+        // Check if patient is null
+        if (patient == null) {
+            return new ResponseEntity<>("Patient not found", HttpStatus.NOT_FOUND);
+        }
+
+        // Update patient properties
         patient.setFirstName(patientDTO.getFirstName());
         patient.setLastName(patientDTO.getLastName());
         patient.setDateOfBirth(patientDTO.getDateOfBirth());

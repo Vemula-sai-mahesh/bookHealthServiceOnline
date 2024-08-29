@@ -1,35 +1,25 @@
 package com.example.BookHealthServiceOnline.domain;
 
-import com.example.BookHealthServiceOnline.service.DepartmentService;
+
 import jakarta.persistence.*;
-import java.math.BigDecimal;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "hospital_services")
+@Table(name = "hospital_service")
 public class HospitalService {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(name = "service_name", nullable = false, length = 100)
+    @NotBlank
+    @Size(max = 100)
     private String serviceName;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
-
-    @ManyToOne
-    @JoinColumn(name = "department_id")
-    private Department department;
-
-    @Column(name = "price", precision = 10, scale = 2)
-    private BigDecimal price;
-
-    @Transient
-    @Autowired
-    private DepartmentService departmentService;
 
     // Getters and Setters
     public Long getId() {
@@ -54,32 +44,5 @@ public class HospitalService {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Department getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(Department department) {
-        this.department = department;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public void setDepartmentId(Long departmentId) {
-        if (departmentId != null) {
-            // Create a new Department instance
-            Department department = new Department();
-            department.setId(departmentId);
-            this.department = department;
-        } else {
-            this.department = null;
-        }
     }
 }

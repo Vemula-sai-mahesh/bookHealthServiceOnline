@@ -9,10 +9,13 @@ public class DepartmentDTO {
     @Size(max = 100)
     private String departmentName;
 
-    @Size(max = 255)
+    @Size(max = 500)
     private String description;
 
+    private Long serviceId; // Service ID can be null if not applicable
+
     // Getters and setters
+
     public String getDepartmentName() {
         return departmentName;
     }
@@ -27,5 +30,13 @@ public class DepartmentDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getServiceId() {
+        return serviceId;
+    }
+
+    public void setServiceId(Long serviceId) {
+        this.serviceId = serviceId;
     }
 }

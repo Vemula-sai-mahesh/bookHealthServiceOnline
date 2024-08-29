@@ -3,6 +3,7 @@ package com.example.BookHealthServiceOnline.dao.impl;
 import com.example.BookHealthServiceOnline.config.AppTenantContext;
 import com.example.BookHealthServiceOnline.dao.DepartmentDao;
 import com.example.BookHealthServiceOnline.domain.Department;
+import com.example.BookHealthServiceOnline.domain.HospitalService;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,8 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,8 +27,8 @@ public class DepartmentDaoImpl implements DepartmentDao {
     }
 
     private static final String INSERT_DEPARTMENT_TEMPLATE =
-            "INSERT INTO %s.department (department_name, description, created_by, created_date, last_modified_by, last_modified_date) " +
-                    "VALUES (:departmentName, :description, :createdBy, :createdDate, :lastModifiedBy, :lastModifiedDate)";
+            "INSERT INTO %s.department (department_name, description, service_id) " +
+                    "VALUES (:departmentName, :description, :serviceId)";
 
     private static final String SELECT_DEPARTMENT_BY_ID_TEMPLATE =
             "SELECT * FROM %s.department WHERE id = :id";
@@ -47,20 +46,10 @@ public class DepartmentDaoImpl implements DepartmentDao {
         String insertSql = String.format(INSERT_DEPARTMENT_TEMPLATE, tenantSchema);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource params = new MapSqlParameterSource();
-        populateCommonParams(params, department);
+        params.addValue("departmentName", department.getDepartmentName());
+        params.addValue("description", department.getDescription());
+        params.addValue("serviceId", department.getServiceId());
 
-        // Set audit fields for the new record
-//        department.setCreatedBy("admin");
-//        department.setCreatedDate(Timestamp.from(Instant.now()));
-//        department.setLastModifiedBy("admin");
-//        department.setLastModifiedDate(Timestamp.from(Instant.now()));
-//
-//        params.addValue("createdBy", department.getCreatedBy());
-//        params.addValue("createdDate", department.getCreatedDate());
-//        params.addValue("lastModifiedBy", department.getLastModifiedBy());
-//        params.addValue("lastModifiedDate", department.getLastModifiedDate());
-
-        // Insert new record and retrieve generated ID
         int rowsAffected = jdbcTemplate.update(insertSql, params, keyHolder, new String[]{"id"});
         if (rowsAffected > 0) {
             Number key = keyHolder.getKey();
@@ -76,36 +65,14 @@ public class DepartmentDaoImpl implements DepartmentDao {
     @Transactional
     public Department update(Department updatedDepartment) {
         String tenantSchema = AppTenantContext.getCurrentTenant();
-
-        // Start building the update SQL query
-        StringBuilder updateSql = new StringBuilder(String.format("UPDATE %s.department SET ", tenantSchema));
+        String updateSql = String.format("UPDATE %s.department SET department_name = :departmentName, description = :description, service_id = :serviceId WHERE id = :id", tenantSchema);
         MapSqlParameterSource params = new MapSqlParameterSource();
-
-        // Add fields that are not null to the update query
-        if (updatedDepartment.getDepartmentName() != null) {
-            updateSql.append("department_name = :departmentName, ");
-            params.addValue("departmentName", updatedDepartment.getDepartmentName());
-        }
-        if (updatedDepartment.getDescription() != null) {
-            updateSql.append("description = :description, ");
-            params.addValue("description", updatedDepartment.getDescription());
-        }
-
-        // Set the audit fields
-//        updatedDepartment.setLastModifiedBy("admin");
-//        updatedDepartment.setLastModifiedDate(Timestamp.from(Instant.now()));
-//        updateSql.append("last_modified_by = :lastModifiedBy, last_modified_date = :lastModifiedDate ");
-//
-//        params.addValue("lastModifiedBy", updatedDepartment.getLastModifiedBy());
-//        params.addValue("lastModifiedDate", updatedDepartment.getLastModifiedDate());
-
-        // Add the WHERE clause
-        updateSql.append("WHERE id = :id");
+        params.addValue("departmentName", updatedDepartment.getDepartmentName());
+        params.addValue("description", updatedDepartment.getDescription());
+        params.addValue("serviceId", updatedDepartment.getServiceId());
         params.addValue("id", updatedDepartment.getId());
 
-        // Execute the update
-        jdbcTemplate.update(updateSql.toString(), params);
-
+        jdbcTemplate.update(updateSql, params);
         return updatedDepartment;
     }
 
@@ -136,11 +103,6 @@ public class DepartmentDaoImpl implements DepartmentDao {
         jdbcTemplate.update(deleteSql, params);
     }
 
-    private void populateCommonParams(MapSqlParameterSource params, Department department) {
-        params.addValue("departmentName", department.getDepartmentName());
-        params.addValue("description", department.getDescription());
-    }
-
     private static class DepartmentRowMapper implements RowMapper<Department> {
         @Override
         public Department mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -148,13 +110,12 @@ public class DepartmentDaoImpl implements DepartmentDao {
             department.setId(rs.getLong("id"));
             department.setDepartmentName(rs.getString("department_name"));
             department.setDescription(rs.getString("description"));
+            // Assuming you have a method to fetch HospitalService by ID, or modify this part accordingly
+            Long serviceId = rs.getLong("service_id");
+            if (serviceId != null && serviceId > 0) {
 
-            // Map auditing fields
-//            department.setCreatedBy(rs.getString("created_by"));
-//            department.setCreatedDate(Timestamp.from(rs.getTimestamp("created_date").toInstant()));
-//            department.setLastModifiedBy(rs.getString("last_modified_by"));
-//            department.setLastModifiedDate(Timestamp.from(rs.getTimestamp("last_modified_date").toInstant()));
-
+                department.setServiceId(serviceId);
+            }
             return department;
         }
     }

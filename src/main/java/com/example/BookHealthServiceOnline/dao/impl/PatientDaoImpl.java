@@ -59,9 +59,15 @@ public class PatientDaoImpl implements PatientDao {
         patient.setLastModifiedBy("admin");
         patient.setLastModifiedDate(Timestamp.from(Instant.now()));
 
-        params.addValue("createdBy", patient.getCreatedBy());
+        if (patient.getGender() != null) {
+            params.addValue("gender", patient.getGender().name());
+        } else {
+            params.addValue("gender", null);
+        }
+
+        params.addValue("createdBy","admin");
         params.addValue("createdDate", patient.getCreatedDate());
-        params.addValue("lastModifiedBy", patient.getLastModifiedBy());
+        params.addValue("lastModifiedBy", "admin");
         params.addValue("lastModifiedDate", patient.getLastModifiedDate());
 
         // Insert new record and retrieve generated ID

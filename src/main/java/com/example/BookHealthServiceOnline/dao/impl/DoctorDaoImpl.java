@@ -3,6 +3,7 @@ package com.example.BookHealthServiceOnline.dao.impl;
 import com.example.BookHealthServiceOnline.config.AppTenantContext;
 import com.example.BookHealthServiceOnline.dao.DoctorDao;
 import com.example.BookHealthServiceOnline.domain.Doctor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -15,7 +16,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -28,49 +31,93 @@ public class DoctorDaoImpl implements DoctorDao {
     }
 
     private static final String INSERT_DOCTOR_TEMPLATE =
-            "INSERT INTO %s.doctor (first_name, last_name, specialty, qualification, experience_years, contact_number, email, user_id, created_by, created_date, last_modified_by, last_modified_date) " +
+            "INSERT INTO %s.doctors (first_name, last_name, specialty, qualification, experience_years, contact_number, email, user_id, created_by, created_date, last_modified_by, last_modified_date) " +
                     "VALUES (:firstName, :lastName, :specialty, :qualification, :experienceYears, :contactNumber, :email, :userId, :createdBy, :createdDate, :lastModifiedBy, :lastModifiedDate)";
 
     private static final String SELECT_DOCTOR_BY_ID_TEMPLATE =
-            "SELECT * FROM %s.doctor WHERE id = :id";
+            "SELECT * FROM %s.doctors WHERE id = :id";
 
     private static final String SELECT_ALL_DOCTORS_TEMPLATE =
-            "SELECT * FROM %s.doctor";
+            "SELECT * FROM %s.doctors";
 
     private static final String DELETE_DOCTOR_BY_ID_TEMPLATE =
-            "DELETE FROM %s.doctor WHERE id = :id";
+            "DELETE FROM %s.doctors WHERE id = :id";
 
-    @Override
-    @Transactional
-    public Doctor save(Doctor doctor) {
-        String tenantSchema = AppTenantContext.getCurrentTenant();
-        String insertSql = String.format(INSERT_DOCTOR_TEMPLATE, tenantSchema);
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        populateCommonParams(params, doctor);
+//    @Override
+//    @Transactional
+//    public Doctor save(Doctor doctor) {
+//        String tenantSchema = AppTenantContext.getCurrentTenant();
+//        String insertSql = String.format(INSERT_DOCTOR_TEMPLATE, tenantSchema);
+//        KeyHolder keyHolder = new GeneratedKeyHolder();
+//        MapSqlParameterSource params = new MapSqlParameterSource();
+//        populateCommonParams(params, doctor);
+//
+//        // Set audit fields for the new record
+//        doctor.setCreatedBy("admin");
+//        doctor.setCreatedDate(Timestamp.from(Instant.now()));
+//        doctor.setLastModifiedBy("admin");
+//        doctor.setLastModifiedDate(Timestamp.from(Instant.now()));
+//
+//        params.addValue("createdBy", doctor.getCreatedBy());
+//        params.addValue("createdDate", doctor.getCreatedDate());
+//        params.addValue("lastModifiedBy", doctor.getLastModifiedBy());
+//        params.addValue("lastModifiedDate", doctor.getLastModifiedDate());
+//
+//        // Insert new record and retrieve generated ID
+//        int rowsAffected = jdbcTemplate.update(insertSql, params, keyHolder, new String[]{"id"});
+//        if (rowsAffected > 0) {
+//            Number key = keyHolder.getKey();
+//            if (key != null) {
+//                doctor.setId(key.longValue());
+//                return doctor;
+//            }
+//        }
+//        return null;
+//    }
+@Override
+@Transactional
+public Doctor save(Doctor doctor) {
+    String tenantSchema = AppTenantContext.getCurrentTenant();
+    String insertSql = String.format("INSERT INTO %s.doctors (first_name, last_name, specialty, qualification, experience_years, contact_number, email, user_id, created_by, created_date, last_modified_by, last_modified_date) " +
+            "VALUES (:firstName, :lastName, :specialty, :qualification, :experienceYears, :contactNumber, :email, :userId, :createdBy, :createdDate, :lastModifiedBy, :lastModifiedDate)", tenantSchema);
 
-        // Set audit fields for the new record
-        doctor.setCreatedBy("admin");
-        doctor.setCreatedDate(Timestamp.from(Instant.now()));
-        doctor.setLastModifiedBy("admin");
-        doctor.setLastModifiedDate(Timestamp.from(Instant.now()));
+    KeyHolder keyHolder = new GeneratedKeyHolder();
+    MapSqlParameterSource params = new MapSqlParameterSource();
 
-        params.addValue("createdBy", doctor.getCreatedBy());
-        params.addValue("createdDate", doctor.getCreatedDate());
-        params.addValue("lastModifiedBy", doctor.getLastModifiedBy());
-        params.addValue("lastModifiedDate", doctor.getLastModifiedDate());
+    // Populate parameters from the Doctor object
+    params.addValue("firstName", doctor.getFirstName());
+    params.addValue("lastName", doctor.getLastName());
+    params.addValue("specialty", doctor.getSpecialty());
+    params.addValue("qualification", doctor.getQualification());
+    params.addValue("experienceYears", doctor.getExperienceYears());
+    params.addValue("contactNumber", doctor.getContactNumber());
+    params.addValue("email", doctor.getEmail());
+    params.addValue("userId", doctor.getUserId());
 
-        // Insert new record and retrieve generated ID
-        int rowsAffected = jdbcTemplate.update(insertSql, params, keyHolder, new String[]{"id"});
-        if (rowsAffected > 0) {
-            Number key = keyHolder.getKey();
-            if (key != null) {
-                doctor.setId(key.longValue());
-                return doctor;
-            }
+    // Set audit fields
+    doctor.setCreatedBy("admin");
+    doctor.setCreatedDate(Timestamp.from(Instant.now()));
+    doctor.setLastModifiedBy("admin");
+    doctor.setLastModifiedDate(Timestamp.from(Instant.now()));
+
+    params.addValue("createdBy", doctor.getCreatedBy());
+    params.addValue("createdDate", doctor.getCreatedDate());
+    params.addValue("lastModifiedBy", doctor.getLastModifiedBy());
+    params.addValue("lastModifiedDate", doctor.getLastModifiedDate());
+
+    // Execute the insert operation
+    int rowsAffected = jdbcTemplate.update(insertSql, params, keyHolder, new String[]{"id"});
+    if (rowsAffected > 0) {
+        Number key = keyHolder.getKey();
+        if (key != null) {
+            doctor.setId(key.longValue());
+            return doctor;
         }
-        return null;
     }
+    return null;
+}
+
+
 
     @Override
     @Transactional
@@ -78,7 +125,7 @@ public class DoctorDaoImpl implements DoctorDao {
         String tenantSchema = AppTenantContext.getCurrentTenant();
 
         // Start building the update SQL query
-        StringBuilder updateSql = new StringBuilder(String.format("UPDATE %s.doctor SET ", tenantSchema));
+        StringBuilder updateSql = new StringBuilder(String.format("UPDATE %s.doctors SET ", tenantSchema));
         MapSqlParameterSource params = new MapSqlParameterSource();
 
         // Add fields that are not null to the update query
@@ -174,6 +221,7 @@ public class DoctorDaoImpl implements DoctorDao {
             doctor.setId(rs.getLong("id"));
             doctor.setFirstName(rs.getString("first_name"));
             doctor.setLastName(rs.getString("last_name"));
+            doctor.setUserId(rs.getLong("user_id"));
             doctor.setSpecialty(rs.getString("specialty"));
             doctor.setQualification(rs.getString("qualification"));
             doctor.setExperienceYears(rs.getInt("experience_years"));

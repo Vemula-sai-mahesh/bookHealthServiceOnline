@@ -54,6 +54,7 @@ public class Patient extends AbstractAuditingEntity {
     @NotNull
     private Gender gender;
 
+
     @Column(name = "contact_number", length = 20)
     @Size(max = 20)
     private String contactNumber;

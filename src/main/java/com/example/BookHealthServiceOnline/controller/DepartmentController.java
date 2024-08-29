@@ -27,6 +27,12 @@ public class DepartmentController {
         Department department = new Department();
         department.setDepartmentName(departmentDTO.getDepartmentName());
         department.setDescription(departmentDTO.getDescription());
+        if (departmentDTO.getServiceId() != null) {
+            // You may need to fetch the HospitalService entity if needed
+            // For simplicity, we are directly setting the serviceId
+            // department.setHospitalService(new HospitalService(departmentDTO.getServiceId()));
+            department.setServiceId(departmentDTO.getServiceId());
+        }
 
         // Save the Department entity to the database
         departmentService.save(department);
@@ -59,12 +65,19 @@ public class DepartmentController {
         // Fetch existing department
         Department department = departmentService.findById(id);
 
+        // Check if department is null
         if (department == null) {
             return new ResponseEntity<>("Department not found", HttpStatus.NOT_FOUND);
         }
 
+        // Update department properties
         department.setDepartmentName(departmentDTO.getDepartmentName());
         department.setDescription(departmentDTO.getDescription());
+        if (departmentDTO.getServiceId() != null) {
+            // Update the HospitalService reference if needed
+            // For simplicity, we are directly setting the serviceId
+            // department.setHospitalService(new HospitalService(departmentDTO.getServiceId()));
+        }
 
         // Save the updated department
         departmentService.update(department);

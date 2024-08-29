@@ -27,14 +27,12 @@ public class HospitalServiceController {
         HospitalService hospitalService = new HospitalService();
         hospitalService.setServiceName(hospitalServiceDTO.getServiceName());
         hospitalService.setDescription(hospitalServiceDTO.getDescription());
-        hospitalService.setDepartmentId(hospitalServiceDTO.getDepartmentId());
-        hospitalService.setPrice(hospitalServiceDTO.getPrice());
 
         // Save the HospitalService entity to the database
         hospitalServiceService.save(hospitalService);
 
         // Return a response indicating success
-        return new ResponseEntity<>("Hospital Service created successfully", HttpStatus.CREATED);
+        return new ResponseEntity<>("Hospital service created successfully", HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
@@ -61,19 +59,19 @@ public class HospitalServiceController {
         // Fetch existing hospital service
         HospitalService hospitalService = hospitalServiceService.findById(id);
 
+        // Check if hospital service is null
         if (hospitalService == null) {
-            return new ResponseEntity<>("Hospital Service not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Hospital service not found", HttpStatus.NOT_FOUND);
         }
 
+        // Update hospital service properties
         hospitalService.setServiceName(hospitalServiceDTO.getServiceName());
         hospitalService.setDescription(hospitalServiceDTO.getDescription());
-        hospitalService.setDepartmentId(hospitalServiceDTO.getDepartmentId());
-        hospitalService.setPrice(hospitalServiceDTO.getPrice());
 
         // Save the updated hospital service
         hospitalServiceService.update(hospitalService);
 
-        return new ResponseEntity<>("Hospital Service updated successfully", HttpStatus.OK);
+        return new ResponseEntity<>("Hospital service updated successfully", HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -83,11 +81,10 @@ public class HospitalServiceController {
         HospitalService hospitalService = hospitalServiceService.findById(id);
 
         if (hospitalService == null) {
-            return new ResponseEntity<>("Hospital Service not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Hospital service not found", HttpStatus.NOT_FOUND);
         }
 
         hospitalServiceService.delete(id);
-        return new ResponseEntity<>("Hospital Service deleted successfully", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("Hospital service deleted successfully", HttpStatus.NO_CONTENT);
     }
 }
-

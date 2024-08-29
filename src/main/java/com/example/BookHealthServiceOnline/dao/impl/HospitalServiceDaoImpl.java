@@ -1,6 +1,5 @@
 package com.example.BookHealthServiceOnline.dao.impl;
 
-
 import com.example.BookHealthServiceOnline.config.AppTenantContext;
 import com.example.BookHealthServiceOnline.dao.HospitalServiceDao;
 import com.example.BookHealthServiceOnline.domain.HospitalService;
@@ -29,17 +28,17 @@ public class HospitalServiceDaoImpl implements HospitalServiceDao {
     }
 
     private static final String INSERT_HOSPITAL_SERVICE_TEMPLATE =
-            "INSERT INTO %s.hospital_services (service_name, description, department_id, price, created_by, created_date, last_modified_by, last_modified_date) " +
-                    "VALUES (:serviceName, :description, :departmentId, :price, :createdBy, :createdDate, :lastModifiedBy, :lastModifiedDate)";
+            "INSERT INTO %s.hospital_service (service_name, description) " +
+                    "VALUES (:serviceName, :description)";
 
     private static final String SELECT_HOSPITAL_SERVICE_BY_ID_TEMPLATE =
-            "SELECT * FROM %s.hospital_services WHERE id = :id";
+            "SELECT * FROM %s.hospital_service WHERE id = :id";
 
     private static final String SELECT_ALL_HOSPITAL_SERVICES_TEMPLATE =
-            "SELECT * FROM %s.hospital_services";
+            "SELECT * FROM %s.hospital_service";
 
     private static final String DELETE_HOSPITAL_SERVICE_BY_ID_TEMPLATE =
-            "DELETE FROM %s.hospital_services WHERE id = :id";
+            "DELETE FROM %s.hospital_service WHERE id = :id";
 
     @Override
     @Transactional
@@ -48,20 +47,9 @@ public class HospitalServiceDaoImpl implements HospitalServiceDao {
         String insertSql = String.format(INSERT_HOSPITAL_SERVICE_TEMPLATE, tenantSchema);
         KeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource params = new MapSqlParameterSource();
-        populateCommonParams(params, hospitalService);
+        params.addValue("serviceName", hospitalService.getServiceName());
+        params.addValue("description", hospitalService.getDescription());
 
-        // Set audit fields for the new record
-//        hospitalService.setCreatedBy("admin");
-//        hospitalService.setCreatedDate(Timestamp.from(Instant.now()));
-//        hospitalService.setLastModifiedBy("admin");
-//        hospitalService.setLastModifiedDate(Timestamp.from(Instant.now()));
-//
-//        params.addValue("createdBy", hospitalService.getCreatedBy());
-//        params.addValue("createdDate", hospitalService.getCreatedDate());
-//        params.addValue("lastModifiedBy", hospitalService.getLastModifiedBy());
-//        params.addValue("lastModifiedDate", hospitalService.getLastModifiedDate());
-
-        // Insert new record and retrieve generated ID
         int rowsAffected = jdbcTemplate.update(insertSql, params, keyHolder, new String[]{"id"});
         if (rowsAffected > 0) {
             Number key = keyHolder.getKey();
@@ -77,44 +65,13 @@ public class HospitalServiceDaoImpl implements HospitalServiceDao {
     @Transactional
     public HospitalService update(HospitalService updatedHospitalService) {
         String tenantSchema = AppTenantContext.getCurrentTenant();
-
-        // Start building the update SQL query
-        StringBuilder updateSql = new StringBuilder(String.format("UPDATE %s.hospital_services SET ", tenantSchema));
+        String updateSql = String.format("UPDATE %s.hospital_service SET service_name = :serviceName, description = :description WHERE id = :id", tenantSchema);
         MapSqlParameterSource params = new MapSqlParameterSource();
-
-        // Add fields that are not null to the update query
-        if (updatedHospitalService.getServiceName() != null) {
-            updateSql.append("service_name = :serviceName, ");
-            params.addValue("serviceName", updatedHospitalService.getServiceName());
-        }
-        if (updatedHospitalService.getDescription() != null) {
-            updateSql.append("description = :description, ");
-            params.addValue("description", updatedHospitalService.getDescription());
-        }
-        if (updatedHospitalService.getDepartment() != null) {
-            updateSql.append("department_id = :departmentId, ");
-            params.addValue("departmentId", updatedHospitalService.getDepartment().getId());
-        }
-        if (updatedHospitalService.getPrice() != null) {
-            updateSql.append("price = :price, ");
-            params.addValue("price", updatedHospitalService.getPrice());
-        }
-
-        // Set the audit fields
-//        updatedHospitalService.setLastModifiedBy("admin");
-//        updatedHospitalService.setLastModifiedDate(Timestamp.from(Instant.now()));
-//        updateSql.append("last_modified_by = :lastModifiedBy, last_modified_date = :lastModifiedDate ");
-//
-//        params.addValue("lastModifiedBy", updatedHospitalService.getLastModifiedBy());
-//        params.addValue("lastModifiedDate", updatedHospitalService.getLastModifiedDate());
-
-        // Add the WHERE clause
-        updateSql.append("WHERE id = :id");
+        params.addValue("serviceName", updatedHospitalService.getServiceName());
+        params.addValue("description", updatedHospitalService.getDescription());
         params.addValue("id", updatedHospitalService.getId());
 
-        // Execute the update
-        jdbcTemplate.update(updateSql.toString(), params);
-
+        jdbcTemplate.update(updateSql, params);
         return updatedHospitalService;
     }
 
@@ -145,13 +102,6 @@ public class HospitalServiceDaoImpl implements HospitalServiceDao {
         jdbcTemplate.update(deleteSql, params);
     }
 
-    private void populateCommonParams(MapSqlParameterSource params, HospitalService hospitalService) {
-        params.addValue("serviceName", hospitalService.getServiceName());
-        params.addValue("description", hospitalService.getDescription());
-        params.addValue("departmentId", hospitalService.getDepartment() != null ? hospitalService.getDepartment().getId() : null);
-        params.addValue("price", hospitalService.getPrice());
-    }
-
     private static class HospitalServiceRowMapper implements RowMapper<HospitalService> {
         @Override
         public HospitalService mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -159,20 +109,7 @@ public class HospitalServiceDaoImpl implements HospitalServiceDao {
             hospitalService.setId(rs.getLong("id"));
             hospitalService.setServiceName(rs.getString("service_name"));
             hospitalService.setDescription(rs.getString("description"));
-
-            // Assuming Department entity is populated separately
-            // Example: hospitalService.setDepartment(new Department(rs.getLong("department_id")));
-
-            hospitalService.setPrice(rs.getBigDecimal("price"));
-
-            // Map auditing fields
-//            hospitalService.setCreatedBy(rs.getString("created_by"));
-//            hospitalService.setCreatedDate(Timestamp.from(rs.getTimestamp("created_date").toInstant()));
-//            hospitalService.setLastModifiedBy(rs.getString("last_modified_by"));
-//            hospitalService.setLastModifiedDate(Timestamp.from(rs.getTimestamp("last_modified_date").toInstant()));
-
             return hospitalService;
         }
     }
 }
-

@@ -1,24 +1,32 @@
 package com.example.BookHealthServiceOnline.domain;
 
 import jakarta.persistence.*;
-import java.util.List;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "department")
 public class Department {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
 
-    @Column(name = "department_name", nullable = false, length = 100)
+
     private String departmentName;
 
-    @Column(name = "description", columnDefinition = "TEXT")
+
     private String description;
 
-    @OneToMany(mappedBy = "department")
-    private List<HospitalService> hospitalServices;
+
+    private Long serviceId;
+
+    public Long getServiceId() {
+        return serviceId;
+    }
+
+    public void setServiceId(Long serviceId) {
+        this.serviceId = serviceId;
+    }
 
     // Getters and Setters
     public Long getId() {
@@ -45,13 +53,7 @@ public class Department {
         this.description = description;
     }
 
-    public List<HospitalService> getHospitalServices() {
-        return hospitalServices;
-    }
 
-    public void setHospitalServices(List<HospitalService> hospitalServices) {
-        this.hospitalServices = hospitalServices;
-    }
 
 
 }

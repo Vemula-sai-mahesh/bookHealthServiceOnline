@@ -7,8 +7,7 @@ import java.util.List;
 public interface HospitalServiceDao {
     HospitalService save(HospitalService hospitalService);
     HospitalService update(HospitalService hospitalService);
-    HospitalService findById(Long id);
+    HospitalService findById(Long serviceId);
     List<HospitalService> findAll();
-    void delete(Long id);
+    void delete(Long serviceId);
 }
-
