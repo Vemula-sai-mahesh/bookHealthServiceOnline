@@ -26,6 +26,7 @@ public class UserServiceImpl implements UserService {
 
     private static final String PATIENT = "PATIENT";
     private static final String DOCTOR = "DOCTOR";
+    private static final String TECHNICIAN = "TECHNICIAN";
 
     @Autowired
     public UserServiceImpl(UserDao userDao, UserCategoryDao userCategoryDao, PatientDao patientDao, DoctorDao doctorDao) {
@@ -41,7 +42,7 @@ public class UserServiceImpl implements UserService {
         if (userCategory!=null) {
             if(user.getId()==null){
                 user =userDao.save(user);
-                if(userCategory.getCategoryName().equals(PATIENT)) {
+                if(userCategory.getCategoryName().equals(PATIENT) ) {
                     Patient patient = new Patient();
                     patient.setContactNumber(user.getPhoneNumber());
                     patient.setEmail(user.getEmail());
@@ -49,7 +50,7 @@ public class UserServiceImpl implements UserService {
                     patient.setGender(Patient.Gender.valueOf(user.getGender().name()));
                     patient.setEmergencyContact(user.getPhoneNumber());
                     patientDao.save(patient);
-                }else if (userCategory.getCategoryName().equals(DOCTOR)) {
+                }else if (userCategory.getCategoryName().equals(DOCTOR) || userCategory.getCategoryName().equals(TECHNICIAN)) {
                     Doctor doctor = new Doctor();
                     doctor.setFirstName("DefaultFirstName"); // or extract from user details if available
                     doctor.setLastName("DefaultLastName");   // or extract from user details if available
