@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Entity
+@Table(name = "hospital")
 public class Hospital extends AbstractAuditingEntity {
 
     @Id
