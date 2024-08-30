@@ -6,10 +6,12 @@ import com.example.BookHealthServiceOnline.domain.AdminUser;
 import com.example.BookHealthServiceOnline.domain.User;
 import com.example.BookHealthServiceOnline.service.JwtService;
 import io.jsonwebtoken.Claims;
+import io.swagger.v3.oas.models.OpenAPI;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -40,6 +42,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserDao userDao;
     private final AppTenantContext appTenantContext;
     private final AdminUserDao adminUserDao;
+    @Autowired
+    OpenAPI myOpenAPI;
 
     public JwtAuthenticationFilter(
             JwtService jwtService,
@@ -70,6 +74,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // Store the server URL in the AppTenantContext
             AppTenantContext.setServerUrl(serverUrl);
+            myOpenAPI.getServers().get(0).setUrl(serverUrl);
             if (privateTenant != null) {
                 AppTenantContext.setCurrentTenant(privateTenant);
             }
