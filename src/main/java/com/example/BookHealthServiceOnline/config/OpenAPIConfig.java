@@ -18,13 +18,21 @@ import java.util.List;
 @Configuration
 public class OpenAPIConfig {
 
-    @Value("${socialMedia.openapi.dev-url}")
-    private String devUrl;
+    @Value("${bookOnlineHealthService.openapi.dev-url}")
+    private String defaultUrl;
 
     @Bean
+
+
     public OpenAPI myOpenAPI() {
+
+        String serverUrl = AppTenantContext.getServerUrl();
+        if (serverUrl == null) {
+            serverUrl = defaultUrl; // Fallback to default if not set
+        }
+
         Server devServer = new Server();
-        devServer.setUrl(devUrl);
+        devServer.setUrl(serverUrl);
         devServer.setDescription("Server URL in Development environment");
 
         Info info = new Info()

@@ -64,6 +64,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             String privateTenant = request.getHeader(PRIVATE_TENANT_HEADER);
+            String serverName = request.getServerName();
+            int serverPort = request.getServerPort();
+            String serverUrl = "http://" + serverName + (serverPort != 80 ? ":" + serverPort : "");
+
+            // Store the server URL in the AppTenantContext
+            AppTenantContext.setServerUrl(serverUrl);
             if (privateTenant != null) {
                 AppTenantContext.setCurrentTenant(privateTenant);
             }

@@ -17,6 +17,7 @@ public class AppTenantContext implements Filter {
     public static final String PRIVATE_TENANT_HEADER = "X-PrivateTenant";
     public static final String DEFAULT_TENANT = "public";
     private static final ThreadLocal<String> currentTenant = new InheritableThreadLocal<>();
+    private static final ThreadLocal<String> currentServerUrl = new InheritableThreadLocal<>();
 
     public static String getCurrentTenant() {
         String tenant = currentTenant.get();
@@ -30,6 +31,15 @@ public class AppTenantContext implements Filter {
         MDC.clear();
         currentTenant.remove();
     }
+
+    public static String getServerUrl() {
+        return currentServerUrl.get();
+    }
+
+    public static void setServerUrl(String serverUrl) {
+        currentServerUrl.set(serverUrl);
+    }
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException, ServletException, IOException {
         HttpServletRequest req = (HttpServletRequest) request;
